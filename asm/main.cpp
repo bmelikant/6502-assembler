@@ -1,13 +1,19 @@
 #include "assembler.h"
-#include "ltokenizer.h"
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 int main(int argc, char *argv[]) {
-    std::string ts = "This      is\ta\ttest\vstring";
-    std::cout << ts << std::endl;
+    std::vector<std::string> program = {
+        "ADC #$01",
+        "ADC $10fb",
+        "adc ($44,x)",
+        "NOP",
+        "NOP ; this is a test comment"
+    };
 
-    LineTokenizer lt(ts);
-
-    std::cout << lt.getConvertedString() << std::endl;
+    for (std::string line : program) {
+        assemble(line, 1);
+    }
 }

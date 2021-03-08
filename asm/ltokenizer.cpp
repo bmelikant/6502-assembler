@@ -1,13 +1,20 @@
 #include "ltokenizer.h"
 
+#include <sstream>
 #include <algorithm>
 #include <string>
 #include <cctype>
 
+/**
+ * returns true if the character is whitespace, but does NOT return true for the space character
+ */
 bool isOtherWhitespace(unsigned char c) {
     return (isspace(c) && c != ' ');
 }
 
+/**
+ * anything that is not a space that is in the string... turn it into a space
+ */
 std::string convertWhitespace(std::string s) {
     std::string retstr = "";
     
@@ -20,23 +27,35 @@ std::string convertWhitespace(std::string s) {
     return retstr;
 }
 
+std::string tolower(std::string inp) {
+    for (size_t i = 0; i < inp.length(); i++) {
+        if (isupper(inp[i])) inp[i] = tolower(inp[i]);
+    }
+    return inp;
+}
+
+// modify later to handle single- and double-quoted strings
+bool canLowercaseToken(std::string token) {
+    return true;
+}
+
 LineTokenizer::LineTokenizer(std::string line) {
     // format the line contents, pull out the tokens
     this->convertedString = convertWhitespace(line);
     std::string s = this->convertedString;
 
-    while (s.length() > 0) {
-        size_t firstCharLoc = s.find_first_not_of(' ');
-        
-        // trim whitespace
-        if (firstCharLoc > 0) s.erase(0, firstCharLoc-1);
-    
-        // read token and store in queue
-        size_t nextWhitespace = s.find_first_of(' ');
-        std::string token = s.substr(0, nextWhitespace);
+    std::stringstream ss(s);
+    std::string token;
 
-        this->tokenQueue.push(token);
-        s.erase(0, nextWhitespace);
+    while (ss.good()) {
+        ss >> token;
+        if (token[0] == ';') break;
+
+        if (canLowercaseToken(token)) {
+            token = tolower(token);
+        }
+        
+        tokenQueue.push(token);
     }
 
     tokenQueue.push("");

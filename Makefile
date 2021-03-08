@@ -17,6 +17,8 @@ ASSEMBLER_OBJS=\
 
 DEMO_FILES="demo/"
 
+CFLAGS:=$(CFLAGS) -DDEBUG
+
 .PHONY: all demo assembler clean clean-demo clean-assembler
 
 all: demo assembler

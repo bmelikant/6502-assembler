@@ -3,6 +3,9 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
+
+#include <cstdint>
 
 /**
  * 
@@ -18,6 +21,9 @@ bool assemble(std::istream fi);
  * are gathered in pass one. Pass two performs code assembly and label fixups. If you are assembling
  * a single line of code, pass can be set to 0 (perform no address fixup)
  */
-bool assemble(std::string line, int pass);
+void assemble(std::string line, int pass);
+
+std::vector<uint8_t> getObjectFile();
+bool isSuccessfulAssembly();
 
 #endif
