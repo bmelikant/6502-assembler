@@ -9,10 +9,12 @@ public:
 
     LineTokenizer(std::string);
     std::string nextToken();
+    std::string getConvertedString();
 
 private:
 
     std::queue<std::string> tokenQueue;
+    std::string convertedString;
 };
 
 #endif

@@ -12,6 +12,7 @@ DEMO_PRG_FILE=HELLO.PRG
 
 ASSEMBLER_OBJS=\
 	asm/assembler.o \
+	asm/ltokenizer.o \
 	asm/main.o
 
 DEMO_FILES="demo/"
