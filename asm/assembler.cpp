@@ -14,7 +14,8 @@ enum ArgumentType {
     NoArgument, ImmediateValue,
     ZeroPage, ZeroPageX,
     Absolute, AbsoluteX, AbsoluteY,
-    IndirectX, IndirectY, Invalid
+    IndirectX, IndirectY, Invalid,
+    Label
 };
 
 struct Opcode {
@@ -50,6 +51,17 @@ static const std::map<std::string, std::vector<Opcode>> opcodes = {
 
 static const Opcode IllegalOpcode = { 0xFF, NoArgument, 0 };
 
+static const std::map<ArgumentType, const char *> typeRegexMap = {
+    { ImmediateValue, "^#\\$([0-9a-f]{1,2})$" },
+    { ZeroPage, "^\\$([0-9a-f]{1,2})$" },
+    { ZeroPageX,  "^\\$([0-9a-f]{1,2}),x$" },
+    { Absolute, "^\\$([0-9a-f]{3,4})$" },
+    { AbsoluteX, "^\\$([0-9a-f]{3,4}),x$" },
+    { AbsoluteY, "^\\$([0-9a-f]{3,4}),y$" },
+    { IndirectX, "^\\(\\$([0-9a-f]{1,2}),x\\)$" },
+    { IndirectY, "^\\(\\$([0-9a-f]{1,2})\\),y$" }
+};
+
 // assembler internal data
 uint16_t origin = 0, current_offset = 0;
 size_t lineNumber = 0;
@@ -61,15 +73,6 @@ bool successful = true;
 bool isOpcode(std::string token);
 bool isDirective(std::string token);
 bool isOpcodeArgument(std::string token);
-bool isImmediate(std::string token);
-bool isZeroPage(std::string token);
-bool isZeroPageXOffset(std::string token);
-bool isAbsoluteMem(std::string token);
-bool isAbsoluteMemXOffset(std::string token);
-bool isAbsoluteMemYOffset(std::string token);
-bool isIndirectMemXOffset(std::string token);
-bool isIndirectMemYOffset(std::string token);
-bool isLabel(std::string token);
 
 bool opcodeRequiresArgument(std::string opcode);
 bool opcodeAcceptsArgument(std::string opcode);
@@ -81,6 +84,9 @@ void error(std::string errmsg);
 
 void doOpcode(std::string opcode, LineTokenizer lt, int pass);
 void doOpcodeArgument(std::string opcode, std::string argument, LineTokenizer lt, int pass);
+
+uint16_t getArgumentValue(Opcode op, std::string argument);
+uint16_t getLabelPosition(Opcode op, std::string argument);
 
 // see API note in parser.h
 bool assemble(std::istream fi) {
@@ -114,15 +120,15 @@ void doOpcode(std::string opcode, LineTokenizer lt, int pass) {
 
     // check if we need an argument
     if (opcodeRequiresArgument(opcode) && token.empty()) {
-        error("Invalid combination of opcode and operands");
+        error("Illegal combination of opcode and operands");
     } else if (opcodeAcceptsArgument(opcode) && !token.empty()) {
         doOpcodeArgument(opcode, token, lt, pass);
     } else if (!opcodeAcceptsArgument(opcode) && !token.empty()) {
-        error("Invalid combination of opcode and operands");
+        error("Illegal combination of opcode and operands");
     } else {
         Opcode op = getOpcode(opcode, "");
         if (op == IllegalOpcode) {
-            error("Invalid combination of opcode and operands");
+            error("Illegal combination of opcode and operands");
         } else {
             assembledCode.push_back(op.opcode);
             current_offset += op.size;
@@ -133,12 +139,47 @@ void doOpcode(std::string opcode, LineTokenizer lt, int pass) {
 void doOpcodeArgument(std::string opcode, std::string argument, LineTokenizer lt, int pass) {
     Opcode op = getOpcode(opcode, argument);
     if (op == IllegalOpcode) {
-        error("Invalid combination of opcode and operands");
+        error("Illegal combination of opcode and operands");
     } else {
+#ifdef DEBUG
         std::cout << "opcode " << opcode << " with argument " << argument << std::endl;
         std::cout << "assembled opcode is " << (int) op.opcode << ", argument type is " << op.argType << ", " << (int) op.size << " byte instruction" << std::endl;
+#endif
         current_offset += op.size;
+
+        // on the second pass, assemble the code and perform fixups if necessary
+        uint16_t argumentValue = 0;
+        if (op.argType == Label && pass == 2) {
+
+        } else {
+            argumentValue = getArgumentValue(op, argument);
+#ifdef DEBUG
+            std::cout << "the argument value is " << argumentValue << std::endl;
+#endif
+            // encode the argument value into the assembly!
+            uint8_t lowByte = (uint8_t) (argumentValue &~ 0xff00);
+            uint8_t hiByte = (uint8_t) (argumentValue >> 8);
+
+            assembledCode.push_back(lowByte);
+            if (op.size == 3) assembledCode.push_back(hiByte);
+        }
     }
+}
+
+uint16_t getArgumentValue(Opcode op, std::string argument) {
+    std::map<ArgumentType, const char *>::const_iterator it = typeRegexMap.find(op.argType);
+    if (it != typeRegexMap.end()) {
+        std::smatch match;
+        std::regex regex = std::regex(it->second);
+
+        if (std::regex_search(argument, match, regex) == true && match.size() == 2) {
+            std::string hexString = match.str(1);
+            return (uint16_t) std::stoi(hexString, 0, 16);
+        }
+    }
+
+    error("Internal assembler error");
+    return 0;
 }
 
 // see API note in assembler.h
@@ -198,30 +239,20 @@ Opcode getOpcode(std::string opcode, std::string argument) {
     return IllegalOpcode;
 }
 
-const char *ImmediateValueRegex = "^#\\$[0-9a-f]{2}$";
-const char *ZeroPageRegex = "^\\$[0-9a-f]{2}$";
-const char *ZeroPageXOffsetRegex = "^\\$[0-9a-f]{2},x$";
-const char *AbsoluteRegex = "^\\$[0-9a-f]{4}$";
-const char *AbsoluteXOffsetRegex = "^\\$[0-9a-f]{4},x$";
-const char *AbsoluteYOffsetRegex = "^\\$[0-9a-f]{4},y$";
-const char *IndirectXOffsetRegex = "^\\(\\$[0-9a-f]{2},x\\)$";
-const char *IndirectYOffsetRegex = "^\\(\\$[0-9a-f]{2}\\),y$";
-
 /**
  * try to work out the correct argument type based on the pattern
  */
 ArgumentType getOpcodeArgumentType(std::string argument) {
     if (argument.empty()) return NoArgument;
-    if (std::regex_match(argument, std::regex(ImmediateValueRegex))) return ImmediateValue;
-    if (std::regex_match(argument, std::regex(ZeroPageRegex))) return ZeroPage;
-    if (std::regex_match(argument, std::regex(ZeroPageXOffsetRegex))) return ZeroPageX;
-    if (std::regex_match(argument, std::regex(AbsoluteRegex))) return Absolute;
-    if (std::regex_match(argument, std::regex(AbsoluteXOffsetRegex))) return AbsoluteX;
-    if (std::regex_match(argument, std::regex(AbsoluteYOffsetRegex))) return AbsoluteY;
-    if (std::regex_match(argument, std::regex(IndirectXOffsetRegex))) return IndirectX;
-    if (std::regex_match(argument, std::regex(IndirectYOffsetRegex))) return IndirectY;
 
-    return Invalid;
+    std::map<ArgumentType, const char *>::const_iterator it;
+    for (it = typeRegexMap.begin(); it != typeRegexMap.end(); it++) {
+        if (std::regex_match(argument, std::regex(it->second))) {
+            return it->first;
+        }
+    }
+
+    return Label;
 }
 
 void error(std::string errmsg) {

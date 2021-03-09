@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
         "ADC #$01",
         "ADC $10fb",
         "adc ($44,x)",
+        "adc begin",
         "NOP",
         "NOP ; this is a test comment"
     };
