@@ -25,5 +25,7 @@ void assemble(std::string line, int pass);
 
 std::vector<uint8_t> getObjectFile();
 bool isSuccessfulAssembly();
+void prepareForSecondPass();
+void insertSymbol(std::string symbol, uint16_t address);
 
 #endif

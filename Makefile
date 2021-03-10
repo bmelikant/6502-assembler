@@ -13,11 +13,12 @@ DEMO_PRG_FILE=HELLO.PRG
 ASSEMBLER_OBJS=\
 	asm/assembler.o \
 	asm/ltokenizer.o \
-	asm/main.o
+	asm/main.o \
+	asm/opcode.o
 
 DEMO_FILES="demo/"
 
-CFLAGS:=$(CFLAGS) -DDEBUG
+CFLAGS:=$(CFLAGS) 
 
 .PHONY: all demo assembler clean clean-demo clean-assembler
 
@@ -34,6 +35,9 @@ $(ASSEMBLER): $(ASSEMBLER_OBJS)
 .cpp.o:
 	$(CXX) -c $< -o $@ $(CFLAGS) $(CPPFLAGS) 
 
+asm/opcode.cpp:
+	./genmatrix.sh
+
 clean: clean-demo clean-assembler
 
 clean-demo:
@@ -42,3 +46,4 @@ clean-demo:
 clean-assembler:
 	rm -f $(ASSEMBLER_OBJS)
 	rm -f $(ASSEMBLER)
+	rm -f asm/opcode.cpp
