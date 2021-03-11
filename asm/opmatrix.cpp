@@ -26,6 +26,7 @@ extern const string mnemonics[];
 
 // addressing modes and their regex patterns
 static const map<string, string> addressModes = {
+    { "", "" },
     { "imm", "^#\\$([0-9a-f]{1,2})$" },
     { "zp", "^\\$([0-9a-f]{1,2})$" },
     { "zpx", "^\\$([0-9a-f]{1,2}),x$" },
@@ -35,7 +36,9 @@ static const map<string, string> addressModes = {
     { "izx", "^\\(\\$([0-9a-f]{1,2}),x\\)$" },
     { "izy", "^\\(\\$([0-9a-f]{1,2})\\),y$" },
     { "ind", "^\\(\\$([0-9a-f]{3,4})\\)$" },
-    { "rel", "^\\(\\$([0-9a-f]{1,2})\\)$" }
+    { "rel", "^\\(\\$([0-9a-f]{1,2})\\)$" },
+    { "label-abs", "^[0-9a-zA-z_]*$" },
+    { "label-rel", "^\\(([0-9a-zA-z_]*)\\)$" }
 };
 
 uint8_t findOpcode(string mnemonic, string addrmode) {
@@ -58,12 +61,27 @@ uint8_t findOpcode(Opcode o) {
     return ILLEGAL_OPCODE;
 }
 
+string findAddressMode(string argument) {
+    std::map<string,string>::const_iterator it = addressModes.begin();
+    while (it != addressModes.end()) {
+        if (it->second.empty() && argument.empty()) {
+            return "";
+        }
+
+        regex rgx = regex(it->second);
+        if (regex_match(argument, rgx) == true) return it->first;
+        it++;
+    }
+
+    return "invalid";
+}
+
 bool matchesOpcode(std::string token) {
     const string *search = mnemonics;
     while (!search->empty()) {
         if (*search == token) return true;
         ++search;
-    } 
+    }
 }
 
 bool Opcode::operator==(const Opcode& opcode) {

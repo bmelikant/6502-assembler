@@ -63,4 +63,9 @@ int main(int argc, char *argv[]) {
             std::cout << "Mnemonic: " << opcodes[i].mnemonic << ", addrmode: " << opcodes[i].addrmode << ", opcode: " << std::hex << (int) opcode << std::endl;
         }
     }
+
+    std::cout << "The address mode for $3f2c is " << findAddressMode("$3f2c") << std::endl;
+    std::cout << "The address mode for ($3f2c) is " << findAddressMode("($3f2c)") << std::endl;
+    std::cout << "The address mode for ($3f),x is " << findAddressMode("($3f),x") << std::endl;
+    std::cout << "The address mode for $3f,x is " << findAddressMode("$3f,x") << std::endl;
 }

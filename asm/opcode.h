@@ -16,5 +16,6 @@ struct Opcode {
 bool matchesOpcode(std::string token);
 uint8_t findOpcode(std::string mnemonic, std::string addrmode);
 uint8_t findOpcode(Opcode);
+std::string findAddressMode(std::string argument);
 
 #endif
