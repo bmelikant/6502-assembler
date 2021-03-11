@@ -1,10 +1,12 @@
 #include "assembler.h"
+#include "opcode.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) { 
+    /*
     std::vector<std::string> program = {
         "begin:",
         "ADC #$01",
@@ -42,4 +44,23 @@ int main(int argc, char *argv[]) {
 
     std::cout << std::endl << "--- End assembly dump ---" << std::endl;
     std::cout << "Assembly was " << ((isSuccessfulAssembly()) ? "successful" : "not successful") << std::endl;
+    */
+
+    Opcode opcodes[] = {
+        { .mnemonic = "BRK", .addrmode = "" },
+        { .mnemonic = "ORA", .addrmode = "izy" },
+        { .mnemonic = "CLI", .addrmode = "" },
+        { .mnemonic = "INC", .addrmode = "zpx" },
+        { .mnemonic = "CLI", .addrmode = "zpx" },
+        { .mnemonic = "ISC", .addrmode = "abx" }
+    };
+
+    for (size_t i = 0; i < 6; i++) {
+        uint8_t opcode = findOpcode(opcodes[i]);
+        if (opcode == ILLEGAL_OPCODE) {
+            std::cout << "Illegal opcode detected: " << opcodes[i].mnemonic << "," << opcodes[i].addrmode << std::endl;
+        } else {
+            std::cout << "Mnemonic: " << opcodes[i].mnemonic << ", addrmode: " << opcodes[i].addrmode << ", opcode: " << std::hex << (int) opcode << std::endl;
+        }
+    }
 }

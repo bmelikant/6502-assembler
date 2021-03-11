@@ -14,6 +14,7 @@ ASSEMBLER_OBJS=\
 	asm/assembler.o \
 	asm/ltokenizer.o \
 	asm/main.o \
+	asm/opmatrix.o \
 	asm/opcode.o
 
 DEMO_FILES="demo/"
