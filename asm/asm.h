@@ -6,17 +6,7 @@
 
 #include <cstdint>
 
-struct AssemblerState;
-
-class Assembler6502 {
-public:
-
-    static void assemble(std::string line);
-    static void clear();
-    
-private:
-    static AssemblerState *as;
-    static void init();
-};
+void assemble(std::string line, int pass);
+void dumpSymbolTable();
 
 #endif

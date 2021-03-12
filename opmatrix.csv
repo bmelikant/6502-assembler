@@ -4,7 +4,7 @@ JSR abs,AND izx,*JAM*,;RLA izx,BIT zp,AND zp,ROL zp,;RLA zp,PLP,AND imm,ROL,;ANC
 BMI rel,AND izy,*JAM*,;RLA izy,;NOP zpx,AND zpx,ROL zpx,;RLA zpx,SEC,AND aby,;NOP,;RLA aby,;NOP abx,AND abx,ROL abx,;RLA abx
 RTI,EOR izx,*JAM*,;SRE izx,;NOP zp,EOR zp,LSR zp,;SRE zp,PHA,EOR imm,LSR,;ALR imm,JMP abs,EOR abs,LSR abs,;SRE abs
 BVC rel,EOR izy,*JAM*,;SRE izy,;NOP zpx,EOR zpx,LSR zpx,;SRE zpx,CLI,EOR aby,;NOP,;SRE aby,;NOP abx,EOR abx,LSR abx,;SRE abx
-RTS,ADC idx,*JAM*,;RRA izx,;NOP zp,ADC zp,ROR zp,;RRA zp,PLA,ADC imm,ROR,;ARR imm,JMP ind,ADC abs,ROR abs,;RRA abs
+RTS,ADC izx,*JAM*,;RRA izx,;NOP zp,ADC zp,ROR zp,;RRA zp,PLA,ADC imm,ROR,;ARR imm,JMP ind,ADC abs,ROR abs,;RRA abs
 BVS rel,ADC izy,*JAM*,;RRA izy,;NOP zpx,ADC zpx,ROR zpx,;RRA zpx,SEI,ADC aby,;NOP,;RRA aby,;NOP abx,ADC abx,ROR abx,;RRA abx
 ;NOP imm,STA izx,;NOP imm,;SAX izx,STY zp,STA zp,STX zp,;SAX zp,DEY,;NOP imm, TXA,;XAA imm,STY abs,STA abs,STX abs,;SAX abs
 BCC rel,STA izy,*JAM*,;AHX izy,STY zpx,STA zpx,STX zpy,;SAX zpy,TYA,STA aby,TXS,;TAS aby,;SHY abx,STA abx,;SHX aby,;AHX aby

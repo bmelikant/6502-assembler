@@ -27,12 +27,7 @@ std::string convertWhitespace(std::string s) {
     return retstr;
 }
 
-std::string tolower(std::string inp) {
-    for (size_t i = 0; i < inp.length(); i++) {
-        if (isupper(inp[i])) inp[i] = tolower(inp[i]);
-    }
-    return inp;
-}
+extern std::string tolower(std::string inp);
 
 // modify later to handle single- and double-quoted strings
 bool canLowercaseToken(std::string token) {

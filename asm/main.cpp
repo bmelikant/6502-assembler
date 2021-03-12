@@ -1,12 +1,14 @@
-#include "assembler.h"
+//#include "assembler.h"
+#include "asm.h"
 #include "opcode.h"
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 
 int main(int argc, char *argv[]) { 
-    /*
+    
     std::vector<std::string> program = {
         "begin:",
         "ADC #$01",
@@ -22,13 +24,16 @@ int main(int argc, char *argv[]) {
     };
 
     // insert a test symbol
-    insertSymbol("begin", 0x0002);
-    insertSymbol("test",0x30ff);
+    //insertSymbol("begin", 0x0002);
+    //insertSymbol("test",0x30ff);
 
     for (std::string line : program) {
         assemble(line, 1);
     }
 
+    dumpSymbolTable();
+
+    /*
     prepareForSecondPass();
 
     for (std::string line : program) {

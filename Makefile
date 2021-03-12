@@ -11,10 +11,10 @@ ASSEMBLER=6502-as
 DEMO_PRG_FILE=HELLO.PRG
 
 ASSEMBLER_OBJS=\
-	asm/assembler.o \
 	asm/ltokenizer.o \
 	asm/main.o \
 	asm/opmatrix.o \
+	asm/asm.o \
 	asm/opcode.o
 
 DEMO_FILES="demo/"
