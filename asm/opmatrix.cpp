@@ -10,7 +10,7 @@
 using namespace std;
 
 // matrix and frequent hit cache
-extern const Opcode opcodeMatrix[16][16];
+extern const Mnemonic opcodeMatrix[16][16];
 extern const string mnemonics[];
 
 struct AddressMode {
@@ -49,17 +49,7 @@ string toupper(string s) {
     return s;
 }
 
-uint8_t findOpcode(string mnemonic, string addrmode) {
-    if (addrmode.find("label-") != string::npos) {
-        addrmode = addrmode.erase(0, addrmode.find("-")+1);
-    }
-    cout << "ADDR MODE IS " << addrmode << endl;
-    // create an opcode variable
-    Opcode o = { .mnemonic = mnemonic, .addrmode = addrmode };
-    return findOpcode(o);
-}
-
-uint8_t findOpcode(Opcode o) {
+uint8_t findOpcode(Mnemonic o) {
     cout << "opcode (" << o.mnemonic << ") addrmode (" << o.addrmode << ")" << endl;
     // search each matrix row
     for (size_t i = 0; i < 16; i++) {
@@ -72,6 +62,16 @@ uint8_t findOpcode(Opcode o) {
     }
 
     return ILLEGAL_OPCODE;
+}
+
+uint8_t findOpcode(string mnemonic, string addrmode) {
+    if (addrmode.find("label-") != string::npos) {
+        addrmode = addrmode.erase(0, addrmode.find("-")+1);
+    }
+    cout << "ADDR MODE IS " << addrmode << endl;
+    // create an opcode variable
+    Mnemonic o = { .mnemonic = mnemonic, .addrmode = addrmode };
+    return findOpcode(o);
 }
 
 string findAddressMode(string argument) {
@@ -119,6 +119,6 @@ bool argumentIsLabelType(string token) {
     return (token == "label-rel" || token == "label-abs");
 }
 
-bool Opcode::operator==(const Opcode& opcode) {
+bool Mnemonic::operator==(const Mnemonic& opcode) {
     return (tolower(mnemonic) == tolower(opcode.mnemonic) && tolower(addrmode) == tolower(opcode.addrmode));
 }

@@ -50,27 +50,4 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl << "--- End assembly dump ---" << std::endl;
     std::cout << "Assembly was " << ((isSuccessfulAssembly()) ? "successful" : "not successful") << std::endl;
     */
-
-    Opcode opcodes[] = {
-        { .mnemonic = "BRK", .addrmode = "" },
-        { .mnemonic = "ORA", .addrmode = "izy" },
-        { .mnemonic = "CLI", .addrmode = "" },
-        { .mnemonic = "INC", .addrmode = "zpx" },
-        { .mnemonic = "CLI", .addrmode = "zpx" },
-        { .mnemonic = "ISC", .addrmode = "abx" }
-    };
-
-    for (size_t i = 0; i < 6; i++) {
-        uint8_t opcode = findOpcode(opcodes[i]);
-        if (opcode == ILLEGAL_OPCODE) {
-            std::cout << "Illegal opcode detected: " << opcodes[i].mnemonic << "," << opcodes[i].addrmode << std::endl;
-        } else {
-            std::cout << "Mnemonic: " << opcodes[i].mnemonic << ", addrmode: " << opcodes[i].addrmode << ", opcode: " << std::hex << (int) opcode << std::endl;
-        }
-    }
-
-    std::cout << "The address mode for $3f2c is " << findAddressMode("$3f2c") << std::endl;
-    std::cout << "The address mode for ($3f2c) is " << findAddressMode("($3f2c)") << std::endl;
-    std::cout << "The address mode for ($3f),x is " << findAddressMode("($3f),x") << std::endl;
-    std::cout << "The address mode for $3f,x is " << findAddressMode("$3f,x") << std::endl;
 }

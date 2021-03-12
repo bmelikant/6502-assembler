@@ -32,7 +32,7 @@ MATRIX_FILE=opmatrix.csv
 
 [[ ! -f "$MATRIX_FILE" ]] && { echo "matrix file $MATRIX_FILE could not be found"; exit 1; }
 
-printf "#include \"opcode.h\"\n\nextern const Opcode opcodeMatrix[16][16] = {" >> "$OUTPUT_FILE"
+printf "#include \"opcode.h\"\n\nextern const Mnemonic opcodeMatrix[16][16] = {" >> "$OUTPUT_FILE"
 
 while IFS= read -r line
 do
