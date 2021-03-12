@@ -11,16 +11,16 @@ using namespace std;
 /** assembler variables **/
 uint16_t origin = 0, offset = 0;
 bool success = true, allowIllegalOpcodes = false;
-size_t lineNo = 0;
+size_t lineNo = 1;
 map<string,uint16_t> symtable;
 
 void error(string msg) {
-    cerr << "Error (line " << lineNo << "): " << msg << endl;
+    cerr << "Error (line " << dec << lineNo << "): " << msg << endl;
     success = false;
 }
 
 void warning(string msg) {
-    cout << "Warning (line " << lineNo << "): " << msg << endl;
+    cout << "Warning (line " << dec << lineNo << "): " << msg << endl;
 }
 
 void printInstruction(uint8_t opcode, uint16_t operand, string label) {
@@ -45,26 +45,18 @@ string stripLabel(string label) {
 
 void doOpcode(string mnemonic, LineTokenizer lt, int pass) {
     string token = lt.nextToken();
-    string addrmode = findAddressMode(token);
 
-    if (addrmode == "invalid") {
+    InstructionPacket ip = buildInstruction(mnemonic, token);
+    if (ip == IllegalInstruction) {
         error("Illegal combination of opcode and operands");
+    } else {
+        if (pass == 2 && ip.isLabelType) {
+            // on the second pass, grab label addresses
+        }
+
+        offset += ip.argSize;
+        printInstruction(ip.opcode, ip.argument, ip.label);
     }
-
-    uint8_t opcode = findOpcode(mnemonic, addrmode);
-    if (opcode == ILLEGAL_OPCODE) {
-        error("Illegal combination of opcode and operands");
-    }
-
-    if (pass == 2 && argumentIsLabelType(addrmode)) {
-        // on the second pass, grab label addresses
-    }
-
-    int instrSize = getInstructionSize(addrmode);
-    offset += instrSize;
-
-    string printLabel = (argumentIsLabelType) ? stripLabel(token) : "";
-    printInstruction(opcode, 0, printLabel);
 }
 
 void doLabel(string label, LineTokenizer lt, int pass) {
@@ -88,7 +80,6 @@ void doLabel(string label, LineTokenizer lt, int pass) {
 
 void assemble(string line, int pass) {
     LineTokenizer lt(line);
-    cout << line << std::endl;
 
     string token = lt.nextToken();
     if (matchesOpcode(token)) {

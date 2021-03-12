@@ -14,13 +14,16 @@ int main(int argc, char *argv[]) {
         "ADC #$01",
         "ADC $10fb",
         "adc ($44,x)",
+        "test:",
         "bne begin",
         "jmp begin",
         "jmp (begin)",
         "jmp ($30ff)",
         "jmp (test)",
         "NOP",
-        "NOP ; this is a test comment"
+        "NOP ; this is a test comment",
+        "test2: nop",
+        "test: jmp (test2)"
     };
 
     // insert a test symbol
