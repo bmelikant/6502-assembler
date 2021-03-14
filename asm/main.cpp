@@ -11,38 +11,30 @@ int main(int argc, char *argv[]) {
     
     std::vector<std::string> program = {
         "begin:",
-        "ADC #$01",
-        "ADC $10fb",
-        "adc ($44,x)",
-        "test:",
-        "bne begin",
-        "jmp begin",
-        "jmp (begin)",
-        "jmp ($30ff)",
-        "jmp (test)",
-        "NOP",
-        "NOP ; this is a test comment",
-        "test2: nop",
-        "test: jmp (test2)"
+        "ldx #$00",
+        "stx $d020",
+        "stx $d021",
+        "rts"
     };
 
-    // insert a test symbol
-    //insertSymbol("begin", 0x0002);
-    //insertSymbol("test",0x30ff);
+    setOutFile("HELLO.PRG");
+    setProgramStart(0xc000);
 
     for (std::string line : program) {
-        assemble(line, 1);
+        assemble(line);
     }
 
+    startNextPass();
+
+    for (std::string line : program) {
+        assemble(line);
+    }
+
+    // close the assembler context, writes file to disk
+    close();
     dumpSymbolTable();
 
     /*
-    prepareForSecondPass();
-
-    for (std::string line : program) {
-        assemble(line, 2);
-    }
-
     std::cout << "--- Dumping assembled code ---" << std::endl;
     std::cout << std::hex;
 
@@ -51,6 +43,6 @@ int main(int argc, char *argv[]) {
     }
 
     std::cout << std::endl << "--- End assembly dump ---" << std::endl;
-    std::cout << "Assembly was " << ((isSuccessfulAssembly()) ? "successful" : "not successful") << std::endl;
     */
+    std::cout << "Assembly was " << ((isSuccessfulAssembly()) ? "successful" : "not successful") << std::endl;
 }

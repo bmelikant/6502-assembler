@@ -14,9 +14,10 @@ struct Mnemonic {
 struct InstructionPacket {
     uint8_t opcode;
     uint16_t argument;
-    int argSize;
+    int size;
     std::string label;
     bool isLabelType;
+    bool isRelativeJump;
 
     bool operator==(const InstructionPacket& packet);
 };

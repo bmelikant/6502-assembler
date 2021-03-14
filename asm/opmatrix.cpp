@@ -19,7 +19,7 @@ struct AddressMode {
 };
 
 Mnemonic IllegalMnemonic = { .mnemonic = "", .addrmode = "" };
-InstructionPacket IllegalInstruction = { .opcode = ILLEGAL_OPCODE, .argument = 0, .argSize = 0, .label = "", .isLabelType = false };
+InstructionPacket IllegalInstruction = { .opcode = ILLEGAL_OPCODE, .argument = 0, .size = 0, .label = "", .isLabelType = false, .isRelativeJump = false };
 
 // addressing modes and their regex patterns
 static const map<string, AddressMode> addressModes = {
@@ -35,7 +35,7 @@ static const map<string, AddressMode> addressModes = {
     { "ind", { "^\\(\\$([0-9a-f]{3,4})\\)$", 3 } },
     { "rel", { "^\\(\\$([0-9a-f]{1,2})\\)$", 2 } },
     { "label-abs", { "^[0-9a-zA-Z_]*$", 3 } },
-    { "label-ind", { "^\\(([0-9a-zA-Z_]*)\\)$"} },
+    { "label-ind", { "^\\(([0-9a-zA-Z_]*)\\)$", 3} },
     { "label-rel", { "^[0-9a-zA-Z_]*$", 2 } }
 };
 
@@ -100,8 +100,11 @@ InstructionPacket createInstructionPacket(uint8_t opcode, string argument, strin
     AddressMode mode = addressModes.find(addrmode)->second;
     InstructionPacket ip;
     ip.opcode = opcode;
-    ip.argSize = mode.bytes;
+    ip.size = mode.bytes;
     ip.argument = 0;
+    ip.isRelativeJump = false;
+    
+    if (addrmode == "label-rel" || addrmode == "rel") ip.isRelativeJump = true;
 
     if (addressModeIsLabelType(addrmode)) {
         ip.isLabelType = true;
@@ -144,5 +147,5 @@ bool Mnemonic::operator==(const Mnemonic& opcode) {
 
 bool InstructionPacket::operator==(const InstructionPacket& packet) {
     return (opcode == packet.opcode && argument == packet.argument &&
-        argSize == packet.argSize && label == packet.label && isLabelType == packet.isLabelType);
+        size == packet.size && label == packet.label && isLabelType == packet.isLabelType);
 }
