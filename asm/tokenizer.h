@@ -3,14 +3,22 @@
 
 #include <string>
 
+enum TokenError {
+    UnclosedLiteral
+};
+
+struct Token {
+    std::string value;
+    TokenError error;
+};
+
 class StringTokenizer {
 public:
     StringTokenizer(std::string line);
-    std::string nextToken();
+    Token nextToken();
 
 private:
     std::string line;
-    
 };
 
 #endif
